@@ -124,10 +124,27 @@ int main(void)
     Model teapot("../assets/teapot.obj");
     Model sphere("../assets/sphere.obj");
     Model crate("../assets/cube.obj");
+    Model floor("../assets/plane.obj");
+    Model wall("../assets/plane.obj");
 
     // Load the textures
     teapot.addTexture("../assets/blue.bmp", "diffuse");
+    teapot.addTexture("../assets/diamond_normal.png", "normal");
+    teapot.addTexture("../assets/neutral_specular.png", "specular");
+
+
     crate.addTexture("../assets/crate.jpg", "diffuse");
+    crate.addTexture("../assets/neutral_normal.png", "specular");
+    crate.addTexture("../assets/neutral_specular.png", "specular");
+
+
+    floor.addTexture("../assets/stones_diffuse.png", "diffuse");
+    floor.addTexture("../assets/stones_normal.png", "normal");
+    floor.addTexture("../assets/stones_specular.png", "specular");
+
+    wall.addTexture("../assets/bricks_diffuse.png", "diffuse");
+    wall.addTexture("../assets/bricks_normal.png", "normal");
+    wall.addTexture("../assets/bricks_specular.png", "specular");
 
     // Use wireframe rendering (comment out to turn off)
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -150,32 +167,59 @@ int main(void)
         glm::vec3(5.0f, -1.25f, -5.0f)
     };
 
+    //Wall Postitions
+    glm::vec3 wallPositions[] =
+    {
+        glm::vec3(-10.0f, -1.25f, 0.0f)
+    };
+
 
     //Create Teapots
-    std::vector<Object> teapotVector;//creates a vector to store teapot objects
-    Object teapotObj;//creat an object called teapotObj within Object Class
-    teapotObj.name = "teapot";//give the teapot object the name "teapot"
+    std::vector<Object> objects;
+    Object obj;
+
+    obj.name = "teapot";//give the teapot object the name "teapot"
     for (unsigned int i = 0; i < 4; i++)
     {
-        teapotObj.position = teapotPositions[i];//set the position to the indexed vector 3 in the teapot position array
-        teapotObj.rotation = glm::vec3(1.0f, 1.0f, 1.0f);//set the rotation axis
-        teapotObj.scale = glm::vec3(0.75f, 0.75f, 0.75f);//set the scale
-        teapotObj.angle = Maths::radians(0.0f * i);//set the rotation
-        teapotVector.push_back(teapotObj);// Add the configured object to the vector
+        obj.position = teapotPositions[i];//set the position to the indexed vector 3 in the teapot position array
+        obj.rotation = glm::vec3(1.0f, 1.0f, 1.0f);//set the rotation axis
+        obj.scale = glm::vec3(0.75f, 0.75f, 0.75f);//set the scale
+        obj.angle = Maths::radians(0.0f * i);//set the rotation
+        objects.push_back(obj);// Add the configured object to the vector
     }
 
     //Add Crates
-    std::vector<Object> crateObjects;
-    Object crateObj;
-    crateObj.name = "crate";
+    obj.name = "crate";
     for (unsigned int i = 0; i < 4; i++)
     {
-        crateObj.position = cratePositions[i];//set the position to the indexed vector 3 in the crate position array
-        crateObj.rotation = glm::vec3(1.0f, 1.0f, 1.0f);//set the rotation axis
-        crateObj.scale = glm::vec3(0.75f, 0.75f, 0.75f);//set the scale
-        crateObj.angle = Maths::radians(0.0f * i);//set the rotation
-        crateObjects.push_back(crateObj);// Add the configured object to the vector
+        obj.position = cratePositions[i];//set the position to the indexed vector 3 in the crate position array
+        obj.rotation = glm::vec3(1.0f, 1.0f, 1.0f);//set the rotation axis
+        obj.scale = glm::vec3(0.75f, 0.75f, 0.75f);//set the scale
+        obj.angle = Maths::radians(0.0f * i);//set the rotation
+        objects.push_back(obj);// Add the configured object to the vector
     }
+
+    //Add Walls
+    obj.name = "wall";
+    for (unsigned int i = 0; i < 1; i++)
+    {
+        obj.position = wallPositions[i];//set the position to the indexed vector 3 in the crate position array
+        obj.rotation = glm::vec3(1.0f, 0.0f, 0.0f);//set the rotation axis
+        obj.scale = glm::vec3(0.75f, 0.75f, 0.75f);//set the scale
+        obj.angle = Maths::radians(90.0f * i);//set the rotation
+        objects.push_back(obj);// Add the configured object to the vector
+    }
+
+
+    // Add floor model to objects vector
+    obj.position = glm::vec3(0.0f, -2.0f, 0.0f);
+    obj.scale = glm::vec3(1.0f, 1.0f, 1.0f);
+    obj.rotation = glm::vec3(0.0f, 1.0f, 0.0f);
+    obj.angle = 0.0f;
+    obj.name = "floor";
+    objects.push_back(obj);
+
+
 
     //-----------LIGHTING---------------
     teapot.ka = 0.2f;//sets ambient reflection coefficeint for teapots
@@ -189,6 +233,22 @@ int main(void)
     crate.kd = 0.7f;//Diffuse reflection Coefficeint
     crate.ks = 1.0f;//specular constant
     crate.Ns = 20.0f;
+
+
+    // Define floor light properties
+    floor.ka = 0.2f;
+    floor.kd = 1.0f;
+    floor.ks = 1.0f;
+    floor.Ns = 20.0f;
+
+    // Define floor light properties
+    wall.ka = 0.2f;
+    wall.kd = 1.0f;
+    wall.ks = 1.0f;
+    wall.Ns = 20.0f;
+
+
+
     //Attenuation
     float constant = 1.0f;
     float linear = 0.05f;
@@ -222,10 +282,10 @@ int main(void)
     lightSources.push_back(light);
 
     //// Add directional light
-    //light.direction = glm::vec3(1.0f, -1.0f, 0.0f);
-    //light.colour = glm::vec3(0.0f, 0.0f, 1.0f);
-    //light.type = 3;
-    //lightSources.push_back(light);
+    light.direction = glm::vec3(1.0f, -1.0f, 0.0f);
+    light.colour = glm::vec3(0.0f, 0.0f, 1.0f);
+    light.type = 3;
+    lightSources.push_back(light);
 
     // Render loop
     while (!glfwWindowShouldClose(window))
@@ -264,6 +324,7 @@ int main(void)
             glUniform1f(glGetUniformLocation(shaderID, ("lightSources[" + idx + "].cosPhi").c_str()), lightSources[i].cosPhi);
         }
 
+
         // Send object lighting properties to the fragment shader
         glUniform1f(glGetUniformLocation(shaderID, "ka"), teapot.ka);
         glUniform1f(glGetUniformLocation(shaderID, "kd"), teapot.kd);
@@ -277,12 +338,12 @@ int main(void)
         glUniformMatrix4fv(glGetUniformLocation(shaderID, "V"), 1, GL_FALSE, &camera.view[0][0]);
 
         //TeapotLoop
-        for (int i = 0; i < static_cast<unsigned int>(teapotVector.size()); i++)//for each object in teapotVector
+        for (int i = 0; i < static_cast<unsigned int>(objects.size()); i++)//for each object in teapotVector
         {
             // Calculate model matrix
-            glm::mat4 translate = Maths::translate(teapotVector[i].position);// Create translation matrix to move the object to its world position
-            glm::mat4 scale = Maths::scale(teapotVector[i].scale);// Create scaling matrix to resize the object
-            glm::mat4 rotate = Maths::rotate(teapotVector[i].angle, teapotVector[i].rotation);// Create rotation matrix based on angle and axis
+            glm::mat4 translate = Maths::translate(objects[i].position);// Create translation matrix to move the object to its world position
+            glm::mat4 scale = Maths::scale(objects[i].scale);// Create scaling matrix to resize the object
+            glm::mat4 rotate = Maths::rotate(objects[i].angle, objects[i].rotation);// Create rotation matrix based on angle and axis
             glm::mat4 model = translate * rotate * scale;// Combine transformations into a single model matrix
 
             // Calculate Model-View and Model-View-Projection matrices
@@ -297,28 +358,17 @@ int main(void)
 
 
             // Draw the model
-            teapot.draw(shaderID);
-        }
-        ////CrateLoop
-        for (int i = 0; i < static_cast<unsigned int>(crateObjects.size()); i++)//for each object in objects
-        {
-            // Calculate model matrix
-            glm::mat4 translate = Maths::translate(crateObjects[i].position);// Create translation matrix to move the object to its world position
-            glm::mat4 scale = Maths::scale(crateObjects[i].scale);// Create scaling matrix to resize the object
-            glm::mat4 rotate = Maths::rotate(crateObjects[i].angle, crateObjects[i].rotation);// Create rotation matrix based on angle and axis
-            glm::mat4 model = translate * rotate * scale;// Combine transformations into a single model matrix
+            if (objects[i].name == "teapot")
+                teapot.draw(shaderID);
 
-            // Calculate Model-View and Model-View-Projection matrices
-            glm::mat4 MV = camera.view * model;// Combine model matrix with view matrix (camera)
-            glm::mat4 MVP = camera.projection * MV;// Combine MV with projection matrix to get final MVP
+            if (objects[i].name == "floor")
+                floor.draw(shaderID);
 
-            // Send matrices to the vertex shader as uniforms
-            glUniformMatrix4fv(glGetUniformLocation(shaderID, "MVP"), 1, GL_FALSE, &MVP[0][0]);// Upload MVP matrix to shader
-            glUniformMatrix4fv(glGetUniformLocation(shaderID, "MV"), 1, GL_FALSE, &MV[0][0]);// Upload MV matrix to shader
+            if (objects[i].name == "crate")
+                crate.draw(shaderID);
 
-
-            // Draw the model
-            crate.draw(shaderID);
+            if (objects[i].name == "wall")
+                wall.draw(shaderID);
         }
 
         // ---------------------------------------------------------------------
