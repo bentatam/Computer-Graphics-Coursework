@@ -152,7 +152,7 @@ int main(void)
     //TeapotPositions array
     glm::vec3 teapotPositions[] =
     {
-        glm::vec3(-10.0f, 0.0f, 0.0f),
+        glm::vec3(-6.0f, 0.0f, 0.0f),
         glm::vec3(5.0f, 0.0f, 0.0f),
         glm::vec3(-5.0f, 0.0f, -5.0f),
         glm::vec3(5.0f, 0.0f, -5.0f)
@@ -161,18 +161,34 @@ int main(void)
     //Crate Positions
     glm::vec3 cratePositions[] =
     {
-        glm::vec3(-10.0f, -1.25f, 0.0f),
+        glm::vec3(-6.0f, -1.25f, 0.0f),
         glm::vec3(5.0f, -1.25f, 0.0f),
         glm::vec3(-5.0f, -1.25f, -5.0f),
         glm::vec3(5.0f, -1.25f, -5.0f)
     };
 
-    //Wall Postitions
     glm::vec3 wallPositions[] =
     {
-        glm::vec3(-10.0f, -1.25f, 0.0f)
+        glm::vec3(0.0f, 8.0f,  -10.0f),
+        glm::vec3(0.0f, 8.0f,  10.0f),
+        glm::vec3(10.0f, 8.0f,  10.0f),
+        glm::vec3(-10.0f, 8.0f,  10.0f)
     };
 
+    glm::vec3 wallRotations[] =
+    {
+        glm::vec3(1.0f, 0.0f, 0.0f),  // right wall
+        glm::vec3(1.0f, 0.0f, 0.0f), // left wall
+        glm::vec3(0.0f, 0.0f, 1.0f), //front wall
+        glm::vec3(0.0f, 0.0f, 1.0f), //back wall
+    };
+
+    float wallAngles[] = {
+        Maths::radians(90.0f), // right
+        Maths::radians(-90.0f), //left
+        Maths::radians(90.0f), //front 
+        Maths::radians(-90.0f)//back
+    };
 
     //Create Teapots
     std::vector<Object> objects;
@@ -201,22 +217,24 @@ int main(void)
 
     //Add Walls
     obj.name = "wall";
-    for (unsigned int i = 0; i < 1; i++)
-    {
-        obj.position = wallPositions[i];//set the position to the indexed vector 3 in the crate position array
-        obj.rotation = glm::vec3(1.0f, 0.0f, 0.0f);//set the rotation axis
-        obj.scale = glm::vec3(0.75f, 0.75f, 0.75f);//set the scale
-        obj.angle = Maths::radians(90.0f * i);//set the rotation
-        objects.push_back(obj);// Add the configured object to the vector
+    for (int i = 0; i < 4; i++) {
+        obj.position = wallPositions[i];
+        obj.rotation = glm::vec3(1.0f, 0.0f, 0.0f);
+        obj.angle = 90.0f;
+        obj.scale = glm::vec3(10.0f, 10.0f, 10.0f);
+        obj.name = "wall";
+        obj.rotation = wallRotations[i];
+        obj.angle = wallAngles[i];
+        objects.push_back(obj);
     }
 
 
     // Add floor model to objects vector
+    obj.name = "floor";
     obj.position = glm::vec3(0.0f, -2.0f, 0.0f);
     obj.scale = glm::vec3(1.0f, 1.0f, 1.0f);
     obj.rotation = glm::vec3(0.0f, 1.0f, 0.0f);
     obj.angle = 0.0f;
-    obj.name = "floor";
     objects.push_back(obj);
 
 
@@ -245,7 +263,7 @@ int main(void)
     wall.ka = 0.2f;
     wall.kd = 1.0f;
     wall.ks = 1.0f;
-    wall.Ns = 20.0f;
+    wall.Ns = 3.0f;
 
 
 
@@ -260,7 +278,7 @@ int main(void)
     
     // Add first point light source
     light.position = glm::vec3(-5.0f, 2.0f, 5.0f);
-    light.colour = glm::vec3(1.0f, 1.0f, 1.0f);
+    light.colour = glm::vec3(0.0f, 0.0f, 1.0f);
     light.constant = 1.0f;
     light.linear = 0.1f;
     light.quadratic = 0.02f;
@@ -283,7 +301,7 @@ int main(void)
 
     //// Add directional light
     light.direction = glm::vec3(1.0f, -1.0f, 0.0f);
-    light.colour = glm::vec3(0.0f, 0.0f, 1.0f);
+    light.colour = glm::vec3(1.0f, 1.0f, 1.0f);
     light.type = 3;
     lightSources.push_back(light);
 
