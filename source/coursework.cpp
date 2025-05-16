@@ -449,6 +449,33 @@ int main(void)
             }
         }
 
+        // Loop through all objects in the scene
+        for (int i = 0; i < static_cast<unsigned int>(objects.size()); i++)
+        {
+            Object& obj = objects[i]; // Reference to current object
+
+            glm::vec3 toCamera = camera.eye - obj.position; // Vector from object to camera
+            float distance = glm::length(toCamera);         // Calculate distance to object center
+            float minDistance = 1.0f;                       // Minimum allowed distance (collision radius)
+
+            if (distance < minDistance && distance > 0.0f)  // If camera is too close and not exactly at center
+            {
+                glm::vec3 pushDir = glm::normalize(toCamera);       // Direction to push camera away
+                camera.eye = obj.position + pushDir * minDistance;  // Push camera to surface of collision radius
+            }            
+        }
+
+
+        //Clamp within Walls
+        float minX = -10.0f, maxX = 10.0f;
+        float minY = 0.0f, maxY = 5.0f;
+        float minZ = -10.0f, maxZ = 10.0f;
+
+        // Clamp camera position on each axis
+        camera.eye.x = glm::clamp(camera.eye.x, minX, maxX);
+        camera.eye.y = glm::clamp(camera.eye.y, minY, maxY);
+        camera.eye.z = glm::clamp(camera.eye.z, minZ, maxZ);
+
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
