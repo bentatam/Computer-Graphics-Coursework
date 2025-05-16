@@ -35,7 +35,7 @@ uniform float ks;
 uniform float Ns;
 uniform Light lightSources[maxLights];
 
-// Function prototypes
+// Point Light
 vec3 pointLight(vec3 lightPosition, vec3 lightColour, float constant, float linear, float quadratic);
 
 //Spotlight

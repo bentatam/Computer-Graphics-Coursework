@@ -279,7 +279,7 @@ int main(void)
     Light light;
 
     
-    // Add first point light source
+    // Add point light source
     light.position = glm::vec3(-5.0f, 2.0f, 5.0f);
     light.colour = glm::vec3(0.0f, 0.0f, 1.0f);
     light.constant = 1.0f;
