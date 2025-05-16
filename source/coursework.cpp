@@ -24,6 +24,9 @@ float jumpTime = 0.0f;
 const float jumpHeight = 2.0f;
 const float jumpDuration = 1.0f;
 
+
+bool rotateTeapots = false;
+
 // Create camera object
 Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -356,7 +359,7 @@ int main(void)
         glUniformMatrix4fv(glGetUniformLocation(shaderID, "V"), 1, GL_FALSE, &camera.view[0][0]);
 
         //TeapotLoop
-        for (int i = 0; i < static_cast<unsigned int>(objects.size()); i++)//for each object in teapotVector
+        for (int i = 0; i < static_cast<unsigned int>(objects.size()); i++)//for each object in objects
         {
             // Calculate model matrix
             glm::mat4 translate = Maths::translate(objects[i].position);// Create translation matrix to move the object to its world position
@@ -433,6 +436,19 @@ int main(void)
             camera.eye.y = 0.0f;
         }
 
+        if (rotateTeapots)
+        {
+            for (int i = 0; i < static_cast<unsigned int>(objects.size()); i++)//for each object in teapotVector
+            {
+                Object& obj = objects[i]; // Get a reference to the current object
+                if (obj.name == "teapot")
+                {
+                    obj.rotation = glm::vec3(0.0f, 1.0f, 0.0f);
+                    obj.angle += 5.0f * deltaTime;
+                }
+            }
+        }
+
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -478,6 +494,16 @@ void keyboardInput(GLFWwindow* window)
     {
         isJumping = true;
         jumpTime = 0.0f;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
+        rotateTeapots = true;
+    }
+
+    else
+    {
+        rotateTeapots = false;
     }
 
 }
